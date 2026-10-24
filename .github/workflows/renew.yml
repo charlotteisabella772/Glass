@@ -2,9 +2,9 @@ name: Auto Renew Glass Panel
 
 on:
   schedule:
-    # 每天北京时间上午 8:00 (UTC 0:00) 自动运行一次
-    - cron: '0 0 * * *'
-  workflow_dispatch: # 支持在网页手动点 Run 触发测试
+    # 改为每 10 天的 UTC 时间 0:00 运行一次（即每月 1日、11日、21日、31日）
+    - cron: '0 0 1,11,21,31 * *'
+  workflow_dispatch: # 保持支持手动触发
 
 jobs:
   renew-job:
