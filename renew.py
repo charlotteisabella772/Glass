@@ -8,28 +8,30 @@ def run_auto_renew():
         print("❌ 错误: 未能在环境变量中找到 GLASS_TOKEN，请检查 Secrets 配置！")
         sys.exit(1)
 
+    # 自动从 token 中截取出用户名（例如 jiedian0809:mvgl0ka0... 会被拆出 jiedian0809）
+    try:
+        username = glass_token.split(":")[0]
+    except Exception:
+        username = ""
+
     url = "https://123.tsm.cc.cd/api/request_renewal"
 
-    # 全方位兼容各种后端可能读取 Token 的位置
     headers = {
         "accept": "application/json, text/plain, */*",
         "content-type": "application/json",
-        "authorization": f"Bearer {glass_token}",  # 兼容常见的 Bearer Token 格式
-        "token": glass_token,                      # 兼容常见的自定义 token 标头
-        "glass-token": glass_token,                # 兼容以键名命名的标头
-        "cookie": f"glass_token={glass_token}",    # 保留 Cookie 兼容
         "origin": "https://123.tsm.cc.cd",
         "referer": "https://123.tsm.cc.cd/",
         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }
 
-    # 某些面板会将 token 作为参数直接放在 POST 的 JSON 请求体中
+    # 严格匹配抓包显示的 JSON 载荷格式
     payload = {
-        "glass_token": glass_token
+        "token": glass_token,
+        "username": username
     }
 
     try:
-        print("🚀 开始向接口发送续期请求（全兼容模式）...")
+        print(f"🚀 正在为用户 [{username}] 发送续期请求...")
         response = requests.post(
             url,
             headers=headers,
@@ -44,7 +46,8 @@ def run_auto_renew():
         if response.status_code == 200:
             print("✅ 自动续期请求成功触发！")
         else:
-            print("⚠️ 服务器返回了非 200 状态。")
+            print("⚠️ 服务器返回了非 200 状态（如果未到可续期时间，服务器可能会拒绝）。")
+            # 视情况决定是否 exit(1)，如果没到期报错可以先不让 workflow 失败
 
     except Exception as e:
         print(f"❌ 发送请求发生异常: {e}")
