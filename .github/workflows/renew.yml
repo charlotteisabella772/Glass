@@ -3,7 +3,7 @@ name: Auto Renew Glass Panel
 on:
   schedule:
     # 改为每 10 天的 UTC 时间 0:00 运行一次（即每月 1日、11日、21日、31日）
-    - cron: '0 0 1,11,21,31 * *'
+    - cron: '0 0 1,11,21 * *'
   workflow_dispatch: # 保持支持手动触发
 
 jobs:
