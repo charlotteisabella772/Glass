@@ -25,6 +25,8 @@ jobs:
 
       - name: 执行自动续期
         env:
+          GLASS_USERNAME: ${{ secrets.GLASS_USERNAME }}
+          GLASS_PASSWORD: ${{ secrets.GLASS_PASSWORD }}
           GLASS_TOKEN: ${{ secrets.GLASS_TOKEN }}
         run: |
           python renew.py
